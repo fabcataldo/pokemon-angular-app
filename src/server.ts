@@ -4,7 +4,8 @@ import express from 'express';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import bootstrap from './main.server';
-import { render } from '@netlify/angular-runtime/common-engine.mjs';
+import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
+import { getContext } from '@netlify/angular-runtime/context.mjs';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -13,12 +14,16 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 const app = express();
 const commonEngine = new CommonEngine();
 
-export async function netlifyCommonEngineHandler(
-  request: Request,
-  context: any
+const angularAppEngine = new AngularAppEngine();
+
+export async function netlifyAppEngineHandler(
+  request: Request
 ): Promise<Response> {
-  return await render(commonEngine);
+  const context = getContext();
+  const result = await angularAppEngine.handle(request, context);
+  return result || new Response('Not found', { status: 404 });
 }
+export const reqHandler = createRequestHandler(netlifyAppEngineHandler);
 
 /**
  * Example Express Rest API endpoints can be defined here.
