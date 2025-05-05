@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { PokemonCardComponent } from './pokemon-card.component';
 import { provideRouter } from '@angular/router';
 import { SimplePokemon } from '../../interfaces';
